@@ -2,3 +2,6 @@
 
 * Initial Version
 
+== 0.5.1 / 2010-09-30
+
+* fixed gem dependency

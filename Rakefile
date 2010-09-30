@@ -13,6 +13,6 @@ Bones {
   authors  'Nicholas Schlueter'
   email    'schlueter@gmail.com'
   url      'http://github.com/schlueter/Ipa-Reader'
-  depends_on "zip", "2.0.2"
+  depend_on "zip", "2.0.2"
 }
 
