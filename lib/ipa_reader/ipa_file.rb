@@ -6,11 +6,12 @@ rescue LoadError
 end
 module IpaReader
   class IpaFile
-    attr_accessor :plist
+    attr_accessor :plist, :file_path
     def initialize(file_path)
+      self.file_path = file_path
       info_plist_file = nil
       Zip::ZipFile.foreach(file_path) { |f| info_plist_file = f if f.name.match(/\/Info.plist/) }
-      self.plist = Plist::Binary.decode_binary_plist(info_plist_file.get_input_stream.read)
+      self.plist = Plist::Binary.decode_binary_plist(self.read_file(/\/Info.plist/))
     end
     
     def version
@@ -37,12 +38,32 @@ module IpaReader
       end
     end
     
+    def icon_file
+      if plist["CFBundleIconFile"]
+        read_file(Regexp.new("#{plist["CFBundleIconFile"]}$"))
+      elsif plist["CFBundleIconFiles"]
+        read_file(Regexp.new("#{plist["CFBundleIconFiles"][0]}$"))
+      else
+        nil
+      end
+    end
+    
+    def mobile_provision_file
+      read_file(/embedded\.mobileprovision$/)
+    end
+    
     def bundle_identifier
       plist["CFBundleIdentifier"]
     end
     
     def icon_prerendered
       plist["UIPrerenderedIcon"] == true
+    end
+    
+    def read_file(regex)
+      file = nil
+      Zip::ZipFile.foreach(self.file_path) { |f| file = f if f.name.match(regex) }
+      file.get_input_stream.read
     end
   end
 end
