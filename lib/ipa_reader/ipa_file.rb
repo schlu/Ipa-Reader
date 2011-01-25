@@ -39,10 +39,13 @@ module IpaReader
     end
     
     def icon_file
-      if plist["CFBundleIconFile"]
-        read_file(Regexp.new("#{plist["CFBundleIconFile"]}$"))
-      elsif plist["CFBundleIconFiles"]
-        read_file(Regexp.new("#{plist["CFBundleIconFiles"][0]}$"))
+      if plist["CFBundleIconFiles"]
+        data = read_file(Regexp.new("#{plist["CFBundleIconFiles"][0]}$"))
+      elsif plist["CFBundleIconFile"]
+        data = read_file(Regexp.new("#{plist["CFBundleIconFile"]}$"))
+      end
+      if data
+        IpaReader::PngFile.normalize_png(data)
       else
         nil
       end
