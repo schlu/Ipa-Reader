@@ -75,7 +75,7 @@ module IpaReader
         end
 
         # Stopping the PNG file parsing
-        if chunkType == "IEND":
+        if chunkType == "IEND"
           break
         end
       end

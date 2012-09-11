@@ -14,5 +14,6 @@ Bones {
   email    'schlueter@gmail.com'
   url      'http://github.com/schlu/Ipa-Reader'
   depend_on "zip", "2.0.2"
+  depend_on "CFPropertyList", "2.1.1"
 }
 

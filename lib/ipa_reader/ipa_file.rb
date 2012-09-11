@@ -4,6 +4,7 @@ rescue LoadError
   require 'rubygems'
   require 'zip'
 end
+
 module IpaReader
   class IpaFile
     attr_accessor :plist, :file_path
@@ -11,7 +12,8 @@ module IpaReader
       self.file_path = file_path
       info_plist_file = nil
       Zip::ZipFile.foreach(file_path) { |f| info_plist_file = f if f.name.match(/\/Info.plist/) }
-      self.plist = Plist::Binary.decode_binary_plist(self.read_file(/\/Info.plist/))
+      cf_plist = CFPropertyList::List.new(:data => self.read_file(/\/Info.plist/), :format => CFPropertyList::List::FORMAT_BINARY)
+      self.plist = cf_plist.value.to_rb
     end
     
     def version
@@ -56,6 +58,7 @@ module IpaReader
     end
     
     def bundle_identifier
+      puts plist["CFBundleIdentifier"].class
       plist["CFBundleIdentifier"]
     end
     
