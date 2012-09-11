@@ -1,18 +1,16 @@
-ipa_reader
-    by Nicholas Schlueter
-    http://twitter.com/schlu
+# ipa_reader
 
-== DESCRIPTION:
+by [Nicholas Schlueter](http://twitter.com/schlu)
+
+## DESCRIPTION
 
 Reads metadata form iPhone Package Archive Files (ipa).
 
-== FEATURES/PROBLEMS:
-
 I am using this gem to get version to build the over the air iPhone Ad Hoc distribution plist file.
 
-== USAGE:
+## USAGE
 
-irb > require 'rubygems'
+`irb > require 'rubygems'
  => true 
 irb > require 'ipa_reader'
  => true 
@@ -31,13 +29,13 @@ irb > ipa_file.url_schemes
 irb > ipa_file.bundle_identifier
  => "com.dcrails.multig" 
 irb > ipa_file.icon_prerendered
- => false
+ => false`
 
-== INSTALL:
+## INSTALL
 
-gem install ipa_reader
+`gem install ipa_reader`
 
-== LICENSE:
+## LICENSE
 
 (The MIT License)
 
