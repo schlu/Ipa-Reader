@@ -10,7 +10,8 @@ I am using this gem to get version to build the over the air iPhone Ad Hoc distr
 
 ## USAGE
 
-`irb > require 'rubygems'
+```bash
+irb > require 'rubygems'
  => true 
 irb > require 'ipa_reader'
  => true 
@@ -29,7 +30,8 @@ irb > ipa_file.url_schemes
 irb > ipa_file.bundle_identifier
  => "com.dcrails.multig" 
 irb > ipa_file.icon_prerendered
- => false`
+ => false
+```
 
 ## INSTALL
 
