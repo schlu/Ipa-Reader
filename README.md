@@ -33,6 +33,14 @@ irb > ipa_file.icon_prerendered
  => false
 ```
 
+### fetch key value
+
+```
+#ipa_file fetch key
+ipa_file.fecth "CFBundleShortVersionString"
+ => "1.0.0" 
+```
+
 ## INSTALL
 
 `gem install ipa_reader`
