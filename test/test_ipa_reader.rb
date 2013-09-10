@@ -14,6 +14,11 @@ class IpaReaderTest < Test::Unit::TestCase
     assert_equal(@ipa_file.version, "1.2.2.4")
   end
   
+  def test_short_version
+    # asserting nil because the test file doesn't have this key
+    assert_nil(@ipa_file.short_version)
+  end
+  
   def test_name
     assert_equal(@ipa_file.name, "MultiG")
   end

@@ -20,6 +20,10 @@ module IpaReader
       plist["CFBundleVersion"]
     end
     
+    def short_version
+      plist["CFBundleShortVersionString"]
+    end
+    
     def name
       plist["CFBundleDisplayName"]
     end
