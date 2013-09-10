@@ -5,3 +5,8 @@
 == 0.5.1 / 2010-09-30
 
 * fixed gem dependency
+
+== 0.7.1 / 2013-0910
+
+* Fixes bug where wrong plist could get picked sometimes (@yayanet)
+* Adds accessor for short version string (@mwhuss)
