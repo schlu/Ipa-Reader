@@ -37,6 +37,11 @@ irb > ipa_file.icon_prerendered
 
 `gem install ipa_reader`
 
+## Contributors
+
+* @yayanet
+* @mwhuss
+
 ## LICENSE
 
 (The MIT License)
