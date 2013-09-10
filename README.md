@@ -39,8 +39,8 @@ irb > ipa_file.icon_prerendered
 
 ## Contributors
 
-* @yayanet
-* @mwhuss
+* [@yayanet](//github.com/yayanet)
+* [@mwhuss](//github.com/mwhuss)
 
 ## LICENSE
 
