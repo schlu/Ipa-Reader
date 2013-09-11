@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.description = "I am using this gem to get version to build the over the air iPhone Ad Hoc distribution plist file."
   s.email = "schlueter@gmail.com"
   s.executables = ["ipa_reader"]
-  s.files = [".gitignore", "=", "History.txt", "README.md", "Rakefile", "bin/ipa_reader", "lib/ipa_reader.rb", "lib/ipa_reader/ipa_file.rb", "lib/ipa_reader/plist_binary.rb", "lib/ipa_reader/png_file.rb", "spec/ipa_reader_spec.rb", "spec/spec_helper.rb", "test/MultiG.ipa", "test/test_ipa_reader.rb", "version.txt"]
+  s.files = ["History.txt", "README.md", "Rakefile", "bin/ipa_reader", "lib/ipa_reader.rb", "lib/ipa_reader/ipa_file.rb", "lib/ipa_reader/plist_binary.rb", "lib/ipa_reader/png_file.rb", "spec/ipa_reader_spec.rb", "spec/spec_helper.rb", "test/MultiG.ipa", "test/test_ipa_reader.rb", "version.txt"]
   s.homepage = "http://github.com/schlu/Ipa-Reader"
   s.require_paths = ["lib"]
   s.rubyforge_project = "ipa_reader"
