@@ -63,7 +63,6 @@ module IpaReader
     end
     
     def bundle_identifier
-      puts plist["CFBundleIdentifier"].class
       plist["CFBundleIdentifier"]
     end
     
