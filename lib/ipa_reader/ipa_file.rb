@@ -16,7 +16,12 @@ module IpaReader
       cf_plist = CFPropertyList::List.new(:data => self.read_file(regex), :format => CFPropertyList::List::FORMAT_BINARY)
       self.plist = cf_plist.value.to_rb
     end
-    
+
+    def fetch key=nil
+      raise "dont foud the key nil value" if key.nil?
+      plist[key]
+    end
+
     def version
       plist["CFBundleVersion"]
     end
