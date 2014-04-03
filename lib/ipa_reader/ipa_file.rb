@@ -7,14 +7,18 @@ end
 
 module IpaReader
   class IpaFile
-    attr_accessor :plist, :file_path
+    attr_accessor :plist, :file_path, :meta_plist
     def initialize(file_path)
       self.file_path = file_path
       info_plist_file = nil
       regex = /Payload\/[^\/]+.app\/Info.plist/
-      Zip::ZipFile.foreach(file_path) { |f| info_plist_file = f if f.name.match(regex) }
       cf_plist = CFPropertyList::List.new(:data => self.read_file(regex), :format => CFPropertyList::List::FORMAT_BINARY)
       self.plist = cf_plist.value.to_rb
+
+      meta_data = self.read_file(/iTunesMetadata.plist/)
+      if meta_data
+        self.meta_plist = CFPropertyList::List.new(:data => meta_data).value.to_rb
+      end
     end
     
     def version
@@ -39,7 +43,7 @@ module IpaReader
     
     def url_schemes
       if plist["CFBundleURLTypes"] && plist["CFBundleURLTypes"][0] && plist["CFBundleURLTypes"][0]["CFBundleURLSchemes"]
-        plist["CFBundleURLTypes"][0]["CFBundleURLSchemes"]
+        plist["CFBundleURLTypes"][0]["CFBundleURLSchemes"].value.map { |schema| schema.value }
       else
         []
       end
@@ -69,11 +73,32 @@ module IpaReader
     def icon_prerendered
       plist["UIPrerenderedIcon"] == true
     end
+
+    def app_id
+      if meta_plist
+        meta_plist["itemId"].to_s
+      end
+    end
+
+    def localized_names
+      names = {}
+      regex = /Payload\/[^\/]+.app\/(.+)\.lproj\/InfoPlist.strings/
+      Zip::ZipFile.foreach(self.file_path) do |f| 
+        if f.name.match(regex)
+          file = f 
+          cf_plist = CFPropertyList::List.new(:data => file.get_input_stream.read, :format => CFPropertyList::List::FORMAT_BINARY).value.to_rb
+          names[$1] = cf_plist['CFBundleDisplayName']
+        end
+      end
+      names
+    end
     
     def read_file(regex)
       file = nil
       Zip::ZipFile.foreach(self.file_path) { |f| file = f if f.name.match(regex) }
-      file.get_input_stream.read
+      if file
+        file.get_input_stream.read
+      end
     end
   end
 end
