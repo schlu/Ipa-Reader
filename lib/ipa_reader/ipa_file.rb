@@ -12,12 +12,13 @@ module IpaReader
       self.file_path = file_path
       info_plist_file = nil
       regex = /Payload\/[^\/]+.app\/Info.plist/
-      cf_plist = CFPropertyList::List.new(:data => self.read_file(regex), :format => CFPropertyList::List::FORMAT_BINARY)
+      cf_plist = CFPropertyList::List.new(:data => self.read_file(regex), :format => CFPropertyList::List::FORMAT_AUTO)
       self.plist = cf_plist.value.to_rb
 
       meta_data = self.read_file(/iTunesMetadata.plist/)
       if meta_data
-        self.meta_plist = CFPropertyList::List.new(:data => meta_data).value.to_rb
+        meta_data.chomp! "\u0000"
+        self.meta_plist = CFPropertyList::List.new(:data => meta_data, :format => CFPropertyList::List::FORMAT_AUTO).value.to_rb
       end
     end
     
