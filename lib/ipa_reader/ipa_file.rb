@@ -5,16 +5,28 @@ rescue LoadError
   require 'zip'
 end
 
+module DeviceFamily
+  IPhone = 1
+  IPad = 2
+end
+
 module IpaReader
   class IpaFile
-    attr_accessor :plist, :file_path
+    attr_accessor :plist, :file_path, :meta_plist
     def initialize(file_path)
       self.file_path = file_path
       info_plist_file = nil
       regex = /Payload\/[^\/]+.app\/Info.plist/
-      Zip::ZipFile.foreach(file_path) { |f| info_plist_file = f if f.name.match(regex) }
-      cf_plist = CFPropertyList::List.new(:data => self.read_file(regex), :format => CFPropertyList::List::FORMAT_BINARY)
+      cf_plist = CFPropertyList::List.new(:data => self.read_file(regex), :format => CFPropertyList::List::FORMAT_AUTO)
       self.plist = cf_plist.value.to_rb
+
+      meta_data = self.read_file(/iTunesMetadata.plist/)
+      if meta_data
+        meta_data.chomp! "\u0000"
+        self.meta_plist = CFPropertyList::List.new(:data => meta_data, :format => CFPropertyList::List::FORMAT_AUTO).value.to_rb
+      else
+        self.meta_plist = {}
+      end
     end
     
     def version
@@ -39,22 +51,25 @@ module IpaReader
     
     def url_schemes
       if plist["CFBundleURLTypes"] && plist["CFBundleURLTypes"][0] && plist["CFBundleURLTypes"][0]["CFBundleURLSchemes"]
-        plist["CFBundleURLTypes"][0]["CFBundleURLSchemes"]
+        plist["CFBundleURLTypes"][0]["CFBundleURLSchemes"].value.map { |schema| schema.value }
       else
         []
       end
     end
     
     def icon_file
+      file = nil
       if plist["CFBundleIconFiles"]
-        data = read_file(Regexp.new("#{plist["CFBundleIconFiles"][0]}$"))
+        file = file_name(Regexp.new("#{plist["CFBundleIconFiles"][-1]}$"))
       elsif plist["CFBundleIconFile"]
-        data = read_file(Regexp.new("#{plist["CFBundleIconFile"]}$"))
-      end
-      if data
-        IpaReader::PngFile.normalize_png(data)
+        file = file_name(Regexp.new("#{plist["CFBundleIconFile"]}$"))
+      elsif plist['CFBundleIcons']
+        primary_icon = plist["CFBundleIcons"]["CFBundlePrimaryIcon"].value
+        icon_files = primary_icon['CFBundleIconFiles'].value
+        icon_file = icon_files[-1].value
+        file = file_name(Regexp.new("#{icon_file}"))
       else
-        nil
+        file = file_name(Regexp.new("Icon@2x"))
       end
     end
     
@@ -69,11 +84,66 @@ module IpaReader
     def icon_prerendered
       plist["UIPrerenderedIcon"] == true
     end
+
+    def app_id
+      self.meta_plist["itemId"].to_s
+    end
+
+    def localized_names
+      names = {}
+      regex = /Payload\/[^\/]+.app\/(.+)\.lproj\/InfoPlist.strings/
+      Zip::ZipFile.foreach(self.file_path) do |f| 
+        if f.name.match(regex)
+          file = f 
+          cf_plist = CFPropertyList::List.new(:data => file.get_input_stream.read, :format => CFPropertyList::List::FORMAT_BINARY).value.to_rb
+          names[$1.to_sym] = cf_plist['CFBundleDisplayName']
+        end
+      end
+      names
+    end
+
+    def excutable_file
+      plist['CFBundleExecutable']
+    end
+
+    def genre
+      meta_plist['genre']
+    end
+
+    def genre_id
+      meta_plist['genreId'].to_s
+    end
+
+    def artist_id
+      meta_plist['artistId'].to_s
+    end
+
+    def artist_name
+      meta_plist['artistName']
+    end
+
+    def release_date
+      Date.parse meta_plist['releaseDate']
+    end
+
+    def device_family
+      plist['UIDeviceFamily']
+    end
     
     def read_file(regex)
       file = nil
       Zip::ZipFile.foreach(self.file_path) { |f| file = f if f.name.match(regex) }
-      file.get_input_stream.read
+      if file
+        file.get_input_stream.read
+      end
+    end
+
+    def file_name(regex)
+      file = nil
+      Zip::ZipFile.foreach(self.file_path) { |f| file = f if f.name.match(regex) }
+      if file
+        file.name
+      end
     end
   end
 end
