@@ -5,6 +5,11 @@ rescue LoadError
   require 'zip'
 end
 
+module DeviceFamily
+  IPhone = 1
+  IPad = 2
+end
+
 module IpaReader
   class IpaFile
     attr_accessor :plist, :file_path, :meta_plist
@@ -19,6 +24,8 @@ module IpaReader
       if meta_data
         meta_data.chomp! "\u0000"
         self.meta_plist = CFPropertyList::List.new(:data => meta_data, :format => CFPropertyList::List::FORMAT_AUTO).value.to_rb
+      else
+        self.meta_plist = {}
       end
     end
     
@@ -51,15 +58,18 @@ module IpaReader
     end
     
     def icon_file
+      file = nil
       if plist["CFBundleIconFiles"]
-        data = read_file(Regexp.new("#{plist["CFBundleIconFiles"][0]}$"))
+        file = file_name(Regexp.new("#{plist["CFBundleIconFiles"][-1]}$"))
       elsif plist["CFBundleIconFile"]
-        data = read_file(Regexp.new("#{plist["CFBundleIconFile"]}$"))
-      end
-      if data
-        IpaReader::PngFile.normalize_png(data)
+        file = file_name(Regexp.new("#{plist["CFBundleIconFile"]}$"))
+      elsif plist['CFBundleIcons']
+        primary_icon = plist["CFBundleIcons"]["CFBundlePrimaryIcon"].value
+        icon_files = primary_icon['CFBundleIconFiles'].value
+        icon_file = icon_files[-1].value
+        file = file_name(Regexp.new("#{icon_file}"))
       else
-        nil
+        file = file_name(Regexp.new("Icon@2x"))
       end
     end
     
@@ -76,9 +86,7 @@ module IpaReader
     end
 
     def app_id
-      if meta_plist
-        meta_plist["itemId"].to_s
-      end
+      self.meta_plist["itemId"].to_s
     end
 
     def localized_names
@@ -88,10 +96,38 @@ module IpaReader
         if f.name.match(regex)
           file = f 
           cf_plist = CFPropertyList::List.new(:data => file.get_input_stream.read, :format => CFPropertyList::List::FORMAT_BINARY).value.to_rb
-          names[$1] = cf_plist['CFBundleDisplayName']
+          names[$1.to_sym] = cf_plist['CFBundleDisplayName']
         end
       end
       names
+    end
+
+    def excutable_file
+      plist['CFBundleExecutable']
+    end
+
+    def genre
+      meta_plist['genre']
+    end
+
+    def genre_id
+      meta_plist['genreId'].to_s
+    end
+
+    def artist_id
+      meta_plist['artistId'].to_s
+    end
+
+    def artist_name
+      meta_plist['artistName']
+    end
+
+    def release_date
+      Date.parse meta_plist['releaseDate']
+    end
+
+    def device_family
+      plist['UIDeviceFamily']
     end
     
     def read_file(regex)
@@ -99,6 +135,14 @@ module IpaReader
       Zip::ZipFile.foreach(self.file_path) { |f| file = f if f.name.match(regex) }
       if file
         file.get_input_stream.read
+      end
+    end
+
+    def file_name(regex)
+      file = nil
+      Zip::ZipFile.foreach(self.file_path) { |f| file = f if f.name.match(regex) }
+      if file
+        file.name
       end
     end
   end

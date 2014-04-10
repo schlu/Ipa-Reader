@@ -34,6 +34,10 @@ class IpaReaderTest < Test::Unit::TestCase
   def test_url_schemes
     assert_equal(@ipa_file.url_schemes, ['fmip1'])
   end
+
+  def test_icon_file
+    assert_equal(@ipa_file.icon_file, 'Payload/FindMyiPhone.app/AppIcon60x60@2x.png')
+  end
   
   def test_bundle_identifier
     assert_equal("com.apple.mobileme.fmip1", @ipa_file.bundle_identifier)
@@ -48,40 +52,68 @@ class IpaReaderTest < Test::Unit::TestCase
   end
 
   def test_localized_names
-    assert_equal({"ar"=>"عثور iPhone",
-                   "ca"=>"Buscar",
-                   "cs"=>"Najít iPhone",
-                   "da"=>"Find iPhone",
-                   "de"=>"Mein iPhone",
-                   "el"=>"Εύρεση",
-                   "en"=>"Find iPhone",
-                   "en_GB"=>"Find iPhone",
-                   "es"=>"Buscar",
-                   "fi"=>"Etsi iPhone",
-                   "fr"=>"Localiser",
-                   "he"=>"מצא iPhone",
-                   "hr"=>"Nađi iPhone",
-                   "hu"=>"Keresés",
-                   "id"=>"Cari iPhone",
-                   "it"=>"Trova iPhone",
-                   "ja"=>"Find iPhone",
-                   "ko"=>"iPhone 찾기",
-                   "ms"=>"Cari iPhone",
-                   "nl"=>"Zoek iPhone",
-                   "no"=>"Finn iPhone",
-                   "pl"=>"Znajdź",
-                   "pt"=>"Buscar",
-                   "pt_PT"=>"Encontrar",
-                   "ro"=>"Găsire iPhone",
-                   "ru"=>"Найти iPhone",
-                   "sk"=>"Nájsť iPhone",
-                   "sv"=>"Hitta iPhone",
-                   "th"=>"ค้นหา iPhone",
-                   "tr"=>"iPhone'u Bul",
-                   "uk"=>"Де iPhone",
-                   "vi"=>"Tìm iPhone",
-                   "zh_CN"=>"查找 iPhone",
-                   "zh_TW"=>"尋找 iPhone"}, @ipa_file.localized_names)
+    assert_equal({:ar=>"عثور iPhone",
+                   :ca=>"Buscar",
+                   :cs=>"Najít iPhone",
+                   :da=>"Find iPhone",
+                   :de=>"Mein iPhone",
+                   :el=>"Εύρεση",
+                   :en=>"Find iPhone",
+                   :en_GB=>"Find iPhone",
+                   :es=>"Buscar",
+                   :fi=>"Etsi iPhone",
+                   :fr=>"Localiser",
+                   :he=>"מצא iPhone",
+                   :hr=>"Nađi iPhone",
+                   :hu=>"Keresés",
+                   :id=>"Cari iPhone",
+                   :it=>"Trova iPhone",
+                   :ja=>"Find iPhone",
+                   :ko=>"iPhone 찾기",
+                   :ms=>"Cari iPhone",
+                   :nl=>"Zoek iPhone",
+                   :no=>"Finn iPhone",
+                   :pl=>"Znajdź",
+                   :pt=>"Buscar",
+                   :pt_PT=>"Encontrar",
+                   :ro=>"Găsire iPhone",
+                   :ru=>"Найти iPhone",
+                   :sk=>"Nájsť iPhone",
+                   :sv=>"Hitta iPhone",
+                   :th=>"ค้นหา iPhone",
+                   :tr=>"iPhone'u Bul",
+                   :uk=>"Де iPhone",
+                   :vi=>"Tìm iPhone",
+                   :zh_CN=>"查找 iPhone",
+                   :zh_TW=>"尋找 iPhone"}, @ipa_file.localized_names)
+  end
+
+  def test_excutable_file
+    assert_equal(@ipa_file.excutable_file, "FindMyiPhone")
+  end
+
+  def test_genre
+    assert_equal(@ipa_file.genre, "Utilities")
+  end
+
+  def test_genre_id
+    assert_equal(@ipa_file.genre_id, "6002")
+  end
+
+  def test_artist_id
+    assert_equal(@ipa_file.artist_id, "284417353")
+  end
+
+  def test_artist_name
+    assert_equal(@ipa_file.artist_name, "Apple")
+  end
+
+  def test_release_date
+    assert_equal(@ipa_file.release_date.to_s, "2010-06-18")
+  end
+
+  def test_device_family
+    assert_equal(@ipa_file.device_family, [DeviceFamily::IPhone, DeviceFamily::IPad])
   end
   
 end
