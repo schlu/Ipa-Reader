@@ -4,5 +4,6 @@ source "https://rubygems.org"
 gemspec
 
 group :development do
-  gem "bones"
+  gem "bundler"
+  gem "rake"
 end
