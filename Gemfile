@@ -3,4 +3,6 @@ source "https://rubygems.org"
 
 gemspec
 
-gem "bones"
+group :development do
+  gem "bones"
+end
