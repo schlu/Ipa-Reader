@@ -78,7 +78,7 @@ module IpaReader
       plist['UIDeviceFamily'].member? 2
     end
 
-    def support_iwatch?
+    def supports_iwatch?
       plist['UIDeviceFamily'].member? 3
     end
 
