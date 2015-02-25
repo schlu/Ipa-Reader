@@ -10,3 +10,10 @@
 
 * Fixes bug where wrong plist could get picked sometimes (@yayanet)
 * Adds accessor for short version string (@mwhuss)
+
+
+== 0.8.0 / 2015-02-25
+* Determine if ipa built for
+*    IPhone
+*    IPad
+*    IWatch
